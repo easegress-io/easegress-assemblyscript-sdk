@@ -15,16 +15,13 @@
  * limitations under the License.
  */
 
+// As required by Easegress, these two functions must be exported.
+export { wasm_alloc, wasm_free } from '../easegress'
 
-import {wasm_alloc, wasm_free, request, log, cookie, LogLevel, response} from '../easegress'
+import {request, response, cookie, log, LogLevel, rand, now} from '../easegress'
 
-export {
-	// must export these two functions
-	wasm_alloc,
-	wasm_free,
-}
-
-// The entry of the code, must be exported with the name 'wasm_run'
+// The entry point of the code,
+// must be exported with the name 'wasm_run' as required by Easegress.
 export function wasm_run(): i32 {
 	let v = request.getHeader( "Foo" )
 	if( v.length > 10 ) {
@@ -42,6 +39,6 @@ export function wasm_run(): i32 {
 		request.addCookie( c )
 	}
 
-	request.setBody( String.UTF8.encode("i have a body now") )
+	request.setBody( String.UTF8.encode("i have a new body now") )
 	return 0;
 }

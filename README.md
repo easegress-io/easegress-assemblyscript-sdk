@@ -43,10 +43,11 @@ npx asinit .
 6. Copy this into assembly/index.ts, note to replace `PATH_TO_SDK_REPO` with the path in the first step:
 
 ```typescript
-import {wasm_alloc, wasm_free, request, log, cookie, LogLevel, response} from 'PATH_TO_SDK_REPO/easegress'
-
 // As required by Easegress, these two functions must be exported.
-export { wasm_alloc, wasm_free }
+export { wasm_alloc, wasm_free } from 'PATH_TO_SDK_REPO/easegress'
+
+import {request, response, cookie, log, LogLevel, rand, now} from 'PATH_TO_SDK_REPO/easegress'
+
 
 // The entry point of the code,
 // must be exported with the name 'wasm_run' as required by Easegress.
