@@ -60,6 +60,16 @@ function log(level: LogLevel, msg: string): void {
 	host_log(level, ptr)
 }
 
+@external("easegress", "host_now") declare function host_now(): i64;
+function now(): i64 {
+	return host_now()
+}
+
+@external("easegress", "host_rand") declare function host_rand(): f64;
+function rand(): f64 {
+	return host_rand()
+}
+
 export {
 	wasm_alloc,
 	wasm_free,
@@ -71,4 +81,6 @@ export {
 	addTag,
 	LogLevel,
 	log,
+	now,
+	rand,
 }
