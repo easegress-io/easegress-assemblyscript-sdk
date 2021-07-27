@@ -43,33 +43,32 @@ npx asinit .
 6. Copy this into assembly/index.ts, note to replace `PATH_TO_SDK_REPO` with the path in the first step:
 
 ```typescript
-// As required by Easegress, these two functions must be exported.
-export { wasm_alloc, wasm_free } from 'PATH_TO_SDK_REPO/easegress'
+// As required by Easegress, these functions must be exported
+export * from 'PATH_TO_SDK_REPO/easegress/proxy'
 
-import {request, response, cookie, log, LogLevel, rand, now} from 'PATH_TO_SDK_REPO/easegress'
+import { Program, request, LogLevel, log, registerProgramFactory } from 'PATH_TO_SDK_REPO/easegress'
 
+class AddHeaderAndSetBody extends Program {
+    constructor(params: Map<string, string>) {
+        super(params)
+    }
 
-// The entry point of the code,
-// must be exported with the name 'wasm_run' as required by Easegress.
-export function wasm_run(): i32 {
-	let v = request.getHeader( "Foo" )
-	if( v.length > 10 ) {
-		log( LogLevel.Warning, "The length of Foo is greater than 10" )
-	}
-	if( v.length > 0 ) {
-		request.addHeader( "Wasm-Added", v )
-	}
+    run(): i32 {
+        super.run()
+        let v = request.getHeader( "Foo" )
+        if( v.length > 10 ) {
+            log( LogLevel.Warning, "The length of Foo is greater than 10" )
+        }
+        if( v.length > 0 ) {
+            request.addHeader( "Wasm-Added", v )
+        }
+        request.setBody( String.UTF8.encode("I have a new body now") )
+        return 0
+    }
+}
 
-	let c = request.getCookie( "hello" )
-	if( !c ) {
-		log( LogLevel.Error, "cookie 'hello' does not exist" )
-	} else {
-		c.name = "goodbye"
-		request.addCookie( c )
-	}
-
-	request.setBody( String.UTF8.encode("i have a new body now") )
-	return 0;
+registerProgramFactory((params: Map<string, string>) => {
+    return new AddHeaderAndSetBody(params)
 }
 ```
 

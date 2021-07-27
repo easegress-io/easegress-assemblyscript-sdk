@@ -20,24 +20,32 @@ import * as cookie from './cookie'
 import * as request from './request'
 import * as response from './response'
 
-// Allocate memory from wasm linear memory,
-// this function must be re-exported by user code
-function wasm_alloc(size: i32): pointer {
-	let buffer = new ArrayBuffer(size);
-	let ptr = changetype<usize>(buffer);
-	return __pin(ptr);
+class Program {
+	constructor(params: Map<string, string>) {
+	}
+
+	run(): i32 {
+		return 0
+	}
 }
 
-// Free memory allocated by wasm_alloc,
-// this function must be re-exported by user code
-function wasm_free(ptr: pointer): void {
-	__unpin(ptr);
+var programFactory: (params: Map<string, string>)=>Program
+
+function createProgram(params: Map<string, string>): Program {
+	return programFactory(params)
 }
 
-// The entry of user code, has to be defined by user
-// function wasm_run(): i32 {
-//    return run()
-// }
+function registerProgramFactory(factory: (params: Map<string, string>)=>Program): void {
+	programFactory = factory
+}
+
+
+// Calling Date.parse from member functions result in a compile error,
+// should be a bug of AssemblyScript.
+// We use a wrapper function as workaround
+function parseDate(str: string): Date {
+	return Date.parse(str)
+}
 
 
 @external("easegress", "host_add_tag") declare function host_add_tag(addr: pointer): void;
@@ -60,9 +68,9 @@ function log(level: LogLevel, msg: string): void {
 	host_log(level, ptr)
 }
 
-@external("easegress", "host_now") declare function host_now(): i64;
-function now(): i64 {
-	return host_now()
+@external("easegress", "host_get_unix_time_in_ms") declare function host_get_unix_time_in_ms(): i64;
+function getUnixTimeInMs(): i64 {
+	return host_get_unix_time_in_ms()
 }
 
 @external("easegress", "host_rand") declare function host_rand(): f64;
@@ -71,8 +79,11 @@ function rand(): f64 {
 }
 
 export {
-	wasm_alloc,
-	wasm_free,
+	parseDate,
+
+	Program,
+	createProgram,
+	registerProgramFactory,
 
 	cookie,
 	request,
@@ -81,6 +92,6 @@ export {
 	addTag,
 	LogLevel,
 	log,
-	now,
+	getUnixTimeInMs,
 	rand,
 }

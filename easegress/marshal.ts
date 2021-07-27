@@ -16,7 +16,7 @@
  */
 
 import {Cookie} from './cookie'
-import {wasm_free} from '.'
+import {wasm_free} from './proxy'
 
 
 export type pointer = usize;
@@ -35,6 +35,15 @@ export function unmarshalString(ptr: pointer): string {
 	return String.UTF8.decode(buf);
 }
 
+export function unmarshalMultipleString(ptr: pointer): Array<string> {
+	let buf = changetype<ArrayBuffer>(ptr);
+	wasm_free(ptr)
+	buf = buf.slice(sizeof<i32>())
+	if(buf.byteLength == 0) {
+		return new Array<string>()
+	}
+	return String.UTF8.decode(buf).split("\0")
+}
 
 export function marshalAllHeader(headers: Map<string, Array<string>>): pointer {
 	let str = ""

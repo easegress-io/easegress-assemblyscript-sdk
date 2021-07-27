@@ -16,7 +16,7 @@
  */
 
 import {Cookie} from './cookie'
-import {pointer, marshalString, unmarshalString, marshalAllHeader, unmarshalAllHeader, marishalData, unmarshalData, marshalCookie, unmarshalCookie} from './marshal'
+import {pointer, marshalString, unmarshalString, marshalAllHeader, unmarshalAllHeader, marishalData, unmarshalData, marshalCookie, unmarshalCookie, unmarshalMultipleString} from './marshal'
 
 @external("easegress", "host_req_get_real_ip") declare function host_req_get_real_ip(): pointer;
 export function getRealIp(): string {
@@ -164,10 +164,7 @@ export function getCookie(name: string): Cookie | null {
 export function getAllCookie(): Array<Cookie> {
 	let result = new Array<Cookie>()
 	let ptr = host_req_get_all_cookie()
-	let buf = changetype<ArrayBuffer>(ptr);
-	buf = buf.slice(sizeof<u32>())
-
-	let strs = String.UTF8.decode(buf).split("\0")
+	let strs = unmarshalMultipleString(ptr)
 	for (let i = 0; i < strs.length; i++) {
 		let c = Cookie.unmarshal(strs[i])
 		if (c != null) {

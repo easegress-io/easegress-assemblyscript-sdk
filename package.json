@@ -1,13 +1,12 @@
 {
   "name": "@megaease/eg-as-sdk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "AssemblyScript SDK for Easegress",
   "main": "easegress/index.ts",
   "scripts": {
     "test": "node tests",
-    "asbuild:untouched": "asc example/index.ts --target debug --use abort=",
-    "asbuild:optimized": "asc example/index.ts --target release --use abort=",
-    "asbuild": "npm run asbuild:untouched && npm run asbuild:optimized"
+    "asbuild:flashsale": "asc examples/flashsale/index.ts --target release --use abort=",
+    "asbuild": "npm run asbuild:flashsale"
   },
   "author": "megaease",
   "license": "Apache-2.0",
