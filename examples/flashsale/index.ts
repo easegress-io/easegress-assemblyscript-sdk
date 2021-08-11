@@ -18,7 +18,7 @@
 // This exports all functions required by Easegress
 export * from '../../easegress/proxy'
 
-import { Program, response, parseDate, cookie, LogLevel, rand, getUnixTimeInMs, registerProgramFactory } from '../../easegress'
+import { Program, response, parseDate, cluster, rand, getUnixTimeInMs, registerProgramFactory, log, LogLevel } from '../../easegress'
 
 class FlashSale extends Program {
 	// permitted is the number of requests which are permitted to enter the
@@ -61,6 +61,9 @@ class FlashSale extends Program {
 
 	run(): i32 {
 		super.run()
+		let counter = cluster.addInt32("counter", 3)
+		log(LogLevel.Warning, "counter is " + counter.toString())
+
 		// if flash sale not start yet
 		if (getUnixTimeInMs() < this.startTime) {
 			// we just set response body to 'not start yet' here, in practice,

@@ -19,6 +19,8 @@ import {pointer, marshalString} from './marshal'
 import * as cookie from './cookie'
 import * as request from './request'
 import * as response from './response'
+import * as cluster from './cluster'
+
 
 class Program {
 	constructor(params: Map<string, string>) {
@@ -88,6 +90,7 @@ export {
 	cookie,
 	request,
 	response,
+	cluster,
 
 	addTag,
 	LogLevel,
