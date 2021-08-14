@@ -16,7 +16,7 @@
  */
 
 import {Cookie} from './cookie'
-import {pointer, marshalString, unmarshalString, marshalAllHeader, unmarshalAllHeader, marishalData, unmarshalData, marshalCookie, unmarshalCookie, unmarshalMultipleString} from './marshal'
+import {pointer, marshalString, unmarshalString, marshalAllHeader, unmarshalAllHeader, marishalData, unmarshalData, marshalCookie, unmarshalCookie, unmarshalStringArray} from './marshal'
 
 @external("easegress", "host_req_get_real_ip") declare function host_req_get_real_ip(): pointer;
 export function getRealIp(): string {
@@ -124,10 +124,11 @@ export function getAllHeader(): Map<string, Array<string>> {
 }
 
 
-@external("easegress", "host_req_set_header") declare function host_req_set_header(addr: pointer): void;
+@external("easegress", "host_req_set_header") declare function host_req_set_header(nameAddr: pointer, valueAddr: pointer): void;
 export function setHeader(name: string, value: string): void {
-	let ptr = marshalString(name + '\0' + value)
-	host_req_set_header(ptr)
+	let namePtr = marshalString(name)
+	let valuePtr = marshalString(value)
+	host_req_set_header(namePtr, valuePtr)
 }
 
 
@@ -138,10 +139,11 @@ export function setAllHeader(headers: Map<string, Array<string>>): void {
 }
 
 
-@external("easegress", "host_req_add_header") declare function host_req_add_header(addr: pointer): void;
+@external("easegress", "host_req_add_header") declare function host_req_add_header(nameAddr: pointer, valueAddr: pointer): void;
 export function addHeader(name: string, value: string): void {
-	let ptr = marshalString(name + '\0' + value)
-	host_req_add_header(ptr)
+	let namePtr = marshalString(name)
+	let valuePtr = marshalString(value)
+	host_req_add_header(namePtr, valuePtr)
 }
 
 
@@ -164,7 +166,7 @@ export function getCookie(name: string): Cookie | null {
 export function getAllCookie(): Array<Cookie> {
 	let result = new Array<Cookie>()
 	let ptr = host_req_get_all_cookie()
-	let strs = unmarshalMultipleString(ptr)
+	let strs = unmarshalStringArray(ptr)
 	for (let i = 0; i < strs.length; i++) {
 		let c = Cookie.unmarshal(strs[i])
 		if (c != null) {

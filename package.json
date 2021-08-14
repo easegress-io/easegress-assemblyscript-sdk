@@ -1,6 +1,6 @@
 {
   "name": "@megaease/eg-as-sdk",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "AssemblyScript SDK for Easegress",
   "main": "easegress/index.ts",
   "scripts": {

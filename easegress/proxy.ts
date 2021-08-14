@@ -16,7 +16,7 @@
  */
 
 import { Program, createProgram } from ".";
-import { pointer, unmarshalMultipleString } from "./marshal";
+import { pointer, unmarshalStringArray } from "./marshal";
 
 // Allocate memory from wasm linear memory,
 // this function must be re-exported by user code
@@ -36,7 +36,7 @@ var program: Program
 
 export function wasm_init(ptr: pointer): void {
 	let params = new Map<string, string>()
-	let strs = unmarshalMultipleString(ptr)
+	let strs = unmarshalStringArray(ptr)
 	for(let i = 0; i + 1 < strs.length; i += 2) {
 		params.set(strs[i], strs[i+1])
 	}

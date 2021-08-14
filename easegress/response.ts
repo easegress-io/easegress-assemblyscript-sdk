@@ -45,10 +45,11 @@ export function getAllHeader(): Map<string, Array<string>> {
 }
 
 
-@external("easegress", "host_resp_set_header") declare function host_resp_set_header(addr: pointer): void;
+@external("easegress", "host_resp_set_header") declare function host_resp_set_header(nameAddr: pointer, valueAddr: pointer): void;
 export function setHeader(name: string, value: string): void {
-	let ptr = marshalString(name + '\0' + value)
-	host_resp_set_header(ptr)
+	let namePtr = marshalString(name)
+	let valuePtr = marshalString(value)
+	host_resp_set_header(namePtr, valuePtr)
 }
 
 
@@ -59,10 +60,11 @@ export function setAllHeader(headers: Map<string, Array<string>>): void {
 }
 
 
-@external("easegress", "host_resp_add_header") declare function host_resp_add_header(addr: pointer): void;
+@external("easegress", "host_resp_add_header") declare function host_resp_add_header(nameAddr: pointer, vlaueAddr: pointer): void;
 export function addHeader(name: string, value: string): void {
-	let ptr = marshalString(name + '\0' + value)
-	host_resp_add_header(ptr)
+	let namePtr = marshalString(name)
+	let valuePtr = marshalString(value)
+	host_resp_add_header(namePtr, valuePtr)
 }
 
 

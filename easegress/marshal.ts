@@ -22,70 +22,6 @@ import {wasm_free} from './proxy'
 export type pointer = usize;
 
 
-export function marshalString(str: string): pointer {
-	let buf = String.UTF8.encode(str + '\0')
-	return changetype<pointer>(buf)
-}
-
-
-export function unmarshalString(ptr: pointer): string {
-	let buf = changetype<ArrayBuffer>(ptr);
-	wasm_free(ptr);
-	buf = buf.slice(0, buf.byteLength - 1)
-	return String.UTF8.decode(buf);
-}
-
-export function unmarshalMultipleString(ptr: pointer): Array<string> {
-	let buf = changetype<ArrayBuffer>(ptr);
-	wasm_free(ptr)
-	buf = buf.slice(sizeof<i32>())
-	if(buf.byteLength == 0) {
-		return new Array<string>()
-	}
-	return String.UTF8.decode(buf).split("\0")
-}
-
-export function marshalAllHeader(headers: Map<string, Array<string>>): pointer {
-	let str = ""
-	let keys = headers.keys()
-	for (let i = 0; i < keys.length; i++) {
-		let k = keys[i];
-		let v = headers.get(k)
-		for (let j = 0; j < v.length; j++) {
-			str += k + ": " + v[j] + "\r\n"
-		}
-	}
-	return marshalString(str)
-}
-
-
-export function unmarshalAllHeader(ptr: pointer): Map<string, Array<string>> {
-	let buf = changetype<ArrayBuffer>(ptr)
-	wasm_free(ptr)
-	buf = buf.slice(0, buf.byteLength - 1)
-
-	let headers = String.UTF8.decode(buf).split("\r\n")
-
-	let result = new Map<string, Array<string>>()
-	for (let i = 0; i < headers.length; i++) {
-		let kv = headers[i].split(": ")
-		if (kv.length != 2) {
-			continue;
-		}
-
-		if (result.has(kv[0])) {
-			result.get(kv[0]).push(kv[1])
-		} else {
-			let a = new Array<string>()
-			a.push(kv[1])
-			result.set(kv[0], a)
-		}
-	}
-
-	return result;
-}
-
-
 export function marishalData(data: ArrayBuffer): pointer {
 	let buf = new ArrayBuffer(data.byteLength + sizeof<i32>())
 
@@ -104,6 +40,90 @@ export function unmarshalData(ptr: pointer): ArrayBuffer {
 	let buf = changetype<ArrayBuffer>(ptr)
 	wasm_free(ptr)
 	return buf.slice(sizeof<i32>())
+}
+
+
+export function marshalString(str: string): pointer {
+	let encoded = String.UTF8.encode(str)
+	let buf = new ArrayBuffer(sizeof<i32>() + encoded.byteLength + 1)
+
+	let view = new DataView(buf)
+	view.setInt32(0, encoded.byteLength + 1, true)
+	view.setInt8(sizeof<i32>() + encoded.byteLength, 0)
+
+	let dst = changetype<pointer>(buf)
+	let src = changetype<pointer>(encoded)
+	memory.copy(dst + sizeof<i32>(), src, encoded.byteLength)
+
+	return changetype<pointer>(buf)
+}
+
+
+export function unmarshalString(ptr: pointer): string {
+	let buf = changetype<ArrayBuffer>(ptr);
+	wasm_free(ptr);
+	buf = buf.slice(4, buf.byteLength - 1)
+	return String.UTF8.decode(buf);
+}
+
+
+export function unmarshalStringArray(ptr: pointer): Array<string> {
+	let buf = changetype<ArrayBuffer>(ptr);
+	wasm_free(ptr)
+
+	let view = new DataView(buf)
+	let count = view.getInt32(0, true)
+	let result = new Array<string>(count)
+	let offset = i32(sizeof<i32>())
+
+	for( let i = 0; i < count; i++ ) {
+		let len = view.getInt32(offset, true)
+		offset += sizeof<i32>()
+		let slice = buf.slice(offset, offset + len - 1)
+		offset += len
+		result[i] = String.UTF8.decode(slice)
+	}
+
+	return result
+}
+
+
+export function marshalAllHeader(headers: Map<string, Array<string>>): pointer {
+	let str = ""
+	let keys = headers.keys()
+	for (let i = 0; i < keys.length; i++) {
+		let k = keys[i];
+		let v = headers.get(k)
+		for (let j = 0; j < v.length; j++) {
+			str += k + ": " + v[j] + "\r\n"
+		}
+	}
+	return marshalString(str)
+}
+
+
+export function unmarshalAllHeader(ptr: pointer): Map<string, Array<string>> {
+	let str = unmarshalString(ptr)
+
+	let headers = str.split("\r\n")
+
+	let result = new Map<string, Array<string>>()
+	for (let i = 0; i < headers.length; i++) {
+		let kv = headers[i].split(": ")
+		if (kv.length != 2) {
+			continue;
+		}
+
+		if (result.has(kv[0])) {
+			result.get(kv[0]).push(kv[1])
+		} else {
+			let a = new Array<string>()
+			a.push(kv[1])
+			result.set(kv[0], a)
+		}
+	}
+
+	return result;
 }
 
 
