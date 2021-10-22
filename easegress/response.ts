@@ -75,7 +75,7 @@ export function delHeader(name: string): void {
 }
 
 
-@external("easegress", "host_req_set_cookie") declare function host_resp_set_cookie(addr: pointer): void;
+@external("easegress", "host_resp_set_cookie") declare function host_resp_set_cookie(addr: pointer): void;
 export function setCookie(c: Cookie): void {
 	let ptr = marshalCookie(c)
 	host_resp_set_cookie(ptr)
