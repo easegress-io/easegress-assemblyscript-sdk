@@ -33,19 +33,41 @@ npm install --save-dev assemblyscript
 npx asinit .
 ```
 
-5. Add `--use abort=` to the `asc` in `package.json`, for example:
+5. Add `--use abort=` to the end `asc assembly/index.ts ...` command in `package.json`, for example,
 
+Before add `--use abort=`:
 ```json
-"asbuild:untouched": "asc assembly/index.ts --target debug --use abort=",
-"asbuild:optimized": "asc assembly/index.ts --target release --use abort=",
+...
+    "scripts": {
+        "test": "node tests",
+        "asbuild:debug": "asc assembly/index.ts --target debug",
+        "asbuild:release": "asc assembly/index.ts --target release",
+        "asbuild": "npm run asbuild:debug && npm run asbuild:release",
+        "start": "npx serve ."
+    },
+...
+```
+After add `--use abort=`:
+```json
+...
+    "scripts": {
+        "test": "node tests",
+        "asbuild:debug": "asc assembly/index.ts --target debug --use abort=",
+        "asbuild:release": "asc assembly/index.ts --target release --use abort=",
+        "asbuild": "npm run asbuild:debug && npm run asbuild:release",
+        "start": "npx serve ."
+    },
+...
 ```
 
 6. Copy this into assembly/index.ts, note to replace `PATH_TO_SDK_REPO` with the path in the first step:
 
 ```typescript
 // As required by Easegress, these functions must be exported
+// Use relative path here, like ../../easegress-assemblyscript-sdk/easegress/proxy
 export * from 'PATH_TO_SDK_REPO/easegress/proxy'
 
+// Use relative path here, like ../../easegress-assemblyscript-sdk/easegress
 import { Program, request, LogLevel, log, registerProgramFactory } from 'PATH_TO_SDK_REPO/easegress'
 
 class AddHeaderAndSetBody extends Program {
@@ -78,8 +100,8 @@ registerProgramFactory((params: Map<string, string>) => {
 npm run asbuild
 ```
 
-If everything is right, `untouched.wasm` (the debug version) and `optimized.wasm` (the release version) will be generated at the `build` folder.
+If everything is right, `debug.wasm` (the debug version) and `release.wasm` (the release version) will be generated at the `build` folder.
 
 ## Deploy and execute
 
-Please refer [the documentation of `WasmHost`](https://github.com/megaease/easegress/blob/main/doc/wasmhost.md) for deploying and executing the compiled Wasm code.
+Please refer [the documentation of `WasmHost`](https://github.com/megaease/easegress/blob/main/doc/reference/wasmhost.md) for deploying and executing the compiled Wasm code.
