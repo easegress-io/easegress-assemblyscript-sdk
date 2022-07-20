@@ -33,25 +33,31 @@ npm install --save-dev assemblyscript
 npx asinit .
 ```
 
-5. Add `--use abort=` to the end `asc assembly/index.ts ...` command in `package.json`, for example:
+5. Add `--use abort=` to the end `asc assembly/index.ts ...` command in `package.json`, for example,
 
+Before add `--use abort=`:
 ```json
-// before add 
-"scripts": {
-    "test": "node tests",
-    "asbuild:debug": "asc assembly/index.ts --target debug",
-    "asbuild:release": "asc assembly/index.ts --target release",
-    "asbuild": "npm run asbuild:debug && npm run asbuild:release",
-    "start": "npx serve ."
-},
-// after add
-"scripts": {
-    "test": "node tests",
-    "asbuild:debug": "asc assembly/index.ts --target debug --use abort=",
-    "asbuild:release": "asc assembly/index.ts --target release --use abort=",
-    "asbuild": "npm run asbuild:debug && npm run asbuild:release",
-    "start": "npx serve ."
-},
+...
+    "scripts": {
+        "test": "node tests",
+        "asbuild:debug": "asc assembly/index.ts --target debug",
+        "asbuild:release": "asc assembly/index.ts --target release",
+        "asbuild": "npm run asbuild:debug && npm run asbuild:release",
+        "start": "npx serve ."
+    },
+...
+```
+After add `--use abort=`:
+```json
+...
+    "scripts": {
+        "test": "node tests",
+        "asbuild:debug": "asc assembly/index.ts --target debug --use abort=",
+        "asbuild:release": "asc assembly/index.ts --target release --use abort=",
+        "asbuild": "npm run asbuild:debug && npm run asbuild:release",
+        "start": "npx serve ."
+    },
+...
 ```
 
 6. Copy this into assembly/index.ts, note to replace `PATH_TO_SDK_REPO` with the path in the first step:
