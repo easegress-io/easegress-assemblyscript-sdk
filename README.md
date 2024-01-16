@@ -1,4 +1,6 @@
 # Easegress AssemblyScript SDK
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Feasegress-io%2Feasegress-assemblyscript-sdk.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Feasegress-io%2Feasegress-assemblyscript-sdk?ref=badge_shield)
+
 
 - [Easegress AssemblyScript SDK](#easegress-assemblyscript-sdk)
 	- [Prerequisites](#prerequisites)
@@ -105,3 +107,7 @@ If everything is right, `debug.wasm` (the debug version) and `release.wasm` (the
 ## Deploy and execute
 
 Please refer [the documentation of `WasmHost`](https://github.com/megaease/easegress/blob/main/doc/reference/wasmhost.md) for deploying and executing the compiled Wasm code.
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Feasegress-io%2Feasegress-assemblyscript-sdk.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Feasegress-io%2Feasegress-assemblyscript-sdk?ref=badge_large)
